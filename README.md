@@ -4,6 +4,7 @@
 [![DSA](https://img.shields.io/badge/Data%20Structures-MinHeap-green.svg)]
 [![Algorithm](https://img.shields.io/badge/Algorithm-HuffmanCoding-orange.svg)]
 [![Compression](https://img.shields.io/badge/Compression-Lossless-red.svg)]
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)]
 
 A production-grade file compression and decompression utility built using **Huffman Coding**, **Custom Min Heap**, **Binary Trees**, **Bit-Level Serialization**, and **Greedy Algorithms**.
 
@@ -627,10 +628,26 @@ Interested In:
 
 ---
 
+# 🏷️ GitHub Topics
 
+```text
+huffman-coding
+file-compression
+compression-algorithm
+data-structures
+algorithms
+binary-tree
+priority-queue
+min-heap
+python
+system-programming
+lossless-compression
+greedy-algorithm
+software-engineering
+coding-interview
+portfolio-project
+```
 
 ---
 
 ## ⭐ If you found this project useful, consider giving it a star and sharing it with others.
-#   C o m p r e s s I Q - - - D y n a m i c - F i l e - C o m p r e s s i o n - U t i l i t y  
- 
