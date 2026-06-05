@@ -1,0 +1,25 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environments
+.env
+venv/
+ENV/
+env/
+
+# Project files
+input_files/*
+compressed_files/*
+decompressed_files/*
+outputs/*
+!input_files/.gitkeep
+!compressed_files/.gitkeep
+!decompressed_files/.gitkeep
+!outputs/.gitkeep
+
+# IDE files
+.vscode/
+.idea/

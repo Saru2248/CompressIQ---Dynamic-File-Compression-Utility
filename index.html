@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompressIQ — Intelligent File Compression Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="glow-bg"></div>
+    <div class="glow-bg-secondary"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-compress brand-icon"></i>
+                <div class="brand-text">
+
+                    <span>CompressIQ</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="compress"><i class="fa-solid fa-file-shield"></i>
+                    Compress</button>
+                <button class="nav-btn" data-tab="decompress"><i class="fa-solid fa-unlock-keyhole"></i>
+                    Decompress</button>
+                <button class="nav-btn" data-tab="visualizer"><i class="fa-solid fa-diagram-project"></i> Tree
+                    Visualizer</button>
+                <button class="nav-btn" data-tab="algorithms"><i class="fa-solid fa-microchip"></i> Algorithms</button>
+                <button class="nav-btn" data-tab="workbook"><i class="fa-solid fa-book-bookmark"></i> Concept
+                    Guide</button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>CompressIQ · DSA Project</p>
+                <span class="badge">Lossless v1.0</span>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="page-title">
+                    <h2 id="current-tab-title">CompressIQ Dashboard</h2>
+                    <p id="current-tab-desc">Intelligent lossless compression powered by Huffman coding & custom Min-Heap</p>
+                </div>
+                <div class="system-status">
+                    <span class="status-indicator online"></span>
+                    <span>Client-Side Engine Active</span>
+                </div>
+            </header>
+
+            <!-- Tab Content: Compress -->
+            <section id="compress-tab" class="tab-panel active">
+                <div class="dashboard-grid">
+                    <!-- Left: Input Control -->
+                    <div class="glass-card panel-left">
+                        <div class="panel-header">
+                            <h3><i class="fa-solid fa-keyboard text-gradient"></i> Input Source</h3>
+                            <div class="input-toggle">
+                                <button class="toggle-btn active" id="btn-input-text">Raw Text</button>
+                                <button class="toggle-btn" id="btn-input-file">Upload File</button>
+                            </div>
+                        </div>
+
+                        <!-- Raw Text Input -->
+                        <div class="input-group active" id="group-text">
+                            <textarea id="text-input"
+                                placeholder="Type or paste your text here to see real-time compression analysis..."></textarea>
+                        </div>
+
+                        <!-- File Input -->
+                        <div class="input-group" id="group-file">
+                            <div class="drop-zone" id="compress-dropzone">
+                                <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                                <p class="drop-text">Drag & drop your file here or <span>browse</span></p>
+                                <p class="drop-subtext">Supports .txt, .json, .csv, and small binary files</p>
+                                <input type="file" id="compress-file-input" style="display: none;">
+                            </div>
+                            <div class="file-details" id="compress-file-details" style="display: none;">
+                                <i class="fa-solid fa-file-lines file-icon"></i>
+                                <div class="file-info">
+                                    <span class="file-name" id="c-file-name">filename.txt</span>
+                                    <span class="file-size" id="c-file-size">0 bytes</span>
+                                </div>
+                                <button class="btn-clear" id="btn-clear-compress"><i
+                                        class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary" id="btn-compress-action">
+                            <i class="fa-solid fa-bolt"></i> Compress & Download .huff
+                        </button>
+                    </div>
+
+                    <!-- Right: Live Metrics & Codebook -->
+                    <div class="glass-card panel-right">
+                        <h3><i class="fa-solid fa-chart-simple text-gradient"></i> Compression Metrics</h3>
+
+                        <div class="metrics-row">
+                            <div class="metric-card">
+                                <span class="metric-label">Original Size</span>
+                                <span class="metric-val" id="metric-orig-size">0 B</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Compressed Size</span>
+                                <span class="metric-val" id="metric-comp-size">0 B</span>
+                            </div>
+                            <div class="metric-card">
+                                <span class="metric-label">Space Saved</span>
+                                <span class="metric-val highlight" id="metric-saved">0.0%</span>
+                            </div>
+                        </div>
+
+                        <div class="metrics-visualizer">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="compression-progress" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span id="progress-desc">No data compressed yet</span>
+                                <span id="metric-ratio">0.00:1 Ratio</span>
+                            </div>
+                        </div>
+
+                        <div class="codebook-container">
+                            <div class="codebook-header">
+                                <h4>Binary Codebook Map</h4>
+                                <span class="codebook-count" id="unique-char-count">0 Unique Bytes</span>
+                            </div>
+                            <div class="table-wrapper">
+                                <table id="codebook-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Byte/Char</th>
+                                            <th>Frequency</th>
+                                            <th>Huffman Code</th>
+                                            <th>Savings</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4" class="empty-table">Enter text on the left to generate
+                                                codebook</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Content: Decompress -->
+            <section id="decompress-tab" class="tab-panel">
+                <div class="glass-card decompress-container">
+                    <div class="decompress-header">
+                        <h2>CompressIQ — Decompress .huff File</h2>
+                        <p>Upload a file compressed by CompressIQ (web or CLI) to fully restore the original data.
+                        </p>
+                    </div>
+
+                    <div class="drop-zone" id="decompress-dropzone">
+                        <i class="fa-solid fa-unlock drop-icon"></i>
+                        <p class="drop-text">Drag & drop your <span>.huff</span> file here or <span>browse</span></p>
+                        <p class="drop-subtext">Must be a valid compressed .huff file</p>
+                        <input type="file" id="decompress-file-input" accept=".huff" style="display: none;">
+                    </div>
+
+                    <div class="file-details" id="decompress-file-details" style="display: none;">
+                        <i class="fa-solid fa-file-zipper file-icon"></i>
+                        <div class="file-info">
+                            <span class="file-name" id="d-file-name">compressed.huff</span>
+                            <span class="file-size" id="d-file-size">0 bytes</span>
+                        </div>
+                        <button class="btn-clear" id="btn-clear-decompress"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="decompress-actions">
+                        <button class="btn-secondary" id="btn-decompress-action" disabled>
+                            <i class="fa-solid fa-unlock-keyhole"></i> Extract & Restore File
+                        </button>
+                    </div>
+
+                    <div class="decompression-result" id="decompress-result-box" style="display: none;">
+                        <div class="result-header">
+                            <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Integrity
+                                Validated</span>
+                            <h4>Restored Text Preview</h4>
+                        </div>
+                        <div class="preview-box" id="decompress-preview"></div>
+                        <button class="btn-primary" id="btn-download-recovered"><i class="fa-solid fa-download"></i>
+                            Download Restored File</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Content: Tree Visualizer -->
+            <section id="visualizer-tab" class="tab-panel">
+
+                <!-- Input Row -->
+                <div class="glass-card tree-input-card">
+                    <div class="tree-input-header">
+                        <h3><i class="fa-solid fa-keyboard text-gradient"></i> Tree Input</h3>
+                        <p>Type any text — all 5 DSA tree structures update live below.</p>
+                    </div>
+                    <div class="tree-input-row">
+                        <input type="text" id="tree-text-input" placeholder="e.g.  ABRACADABRA  or  hello world" value="ABRACADABRA" autocomplete="off" spellcheck="false" />
+                        <span class="tree-char-count" id="tree-char-count">11 chars</span>
+                    </div>
+                </div>
+
+                <!-- Tree Type Selector -->
+                <div class="tree-type-selector">
+                    <button class="tree-type-btn active" data-tree="bst">
+                        <i class="fa-solid fa-sitemap"></i>
+                        <span>Binary Search Tree</span>
+                        <small>O(log n) avg</small>
+                    </button>
+                    <button class="tree-type-btn" data-tree="avl">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                        <span>AVL Tree</span>
+                        <small>Self-Balancing</small>
+                    </button>
+                    <button class="tree-type-btn" data-tree="minheap">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Min-Heap</span>
+                        <small>Priority Queue</small>
+                    </button>
+                    <button class="tree-type-btn" data-tree="rbt">
+                        <i class="fa-solid fa-circle-nodes"></i>
+                        <span>Red-Black Tree</span>
+                        <small>Balanced BST</small>
+                    </button>
+                    <button class="tree-type-btn" data-tree="trie">
+                        <i class="fa-solid fa-diagram-successor"></i>
+                        <span>Trie (Prefix)</span>
+                        <small>String Index</small>
+                    </button>
+                </div>
+
+                <!-- Info Bar -->
+                <div class="tree-info-bar" id="tree-info-bar">
+                    <span class="tib-title" id="tib-title">Binary Search Tree</span>
+                    <span class="tib-desc" id="tib-desc">Insert each unique character by ASCII value. Left child &lt; parent &lt; right child.</span>
+                    <div class="tree-legend">
+                        <span class="legend-item"><span class="node-dot internal"></span> Internal</span>
+                        <span class="legend-item"><span class="node-dot leaf"></span> Leaf</span>
+                        <span class="legend-item"><span class="node-dot rbt-red"></span> Red</span>
+                        <span class="legend-item"><span class="node-dot rbt-black"></span> Black</span>
+                    </div>
+                </div>
+
+                <!-- SVG Canvas -->
+                <div class="glass-card tree-canvas-outer">
+                    <div class="tree-canvas-wrapper" id="tree-canvas-wrapper">
+                        <svg id="tree-svg" width="100%" height="520"></svg>
+                        <div id="tree-empty-message" class="empty-canvas">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            <p>Type some text above to visualize the tree structure</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complexity Table -->
+                <div class="glass-card complexity-table-card">
+                    <h4><i class="fa-solid fa-table text-gradient"></i> Complexity Comparison</h4>
+                    <div class="table-wrapper" style="height:auto; max-height:220px;">
+                        <table>
+                            <thead>
+                                <tr><th>Tree Type</th><th>Search</th><th>Insert</th><th>Delete</th><th>Space</th><th>Balanced?</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr class="active-tree-row" id="cmp-bst"><td><strong>BST</strong></td><td>O(log n)*</td><td>O(log n)*</td><td>O(log n)*</td><td>O(n)</td><td>❌ No</td></tr>
+                                <tr id="cmp-avl"><td><strong>AVL</strong></td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td><td>✅ Yes</td></tr>
+                                <tr id="cmp-minheap"><td><strong>Min-Heap</strong></td><td>O(n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td><td>✅ Structural</td></tr>
+                                <tr id="cmp-rbt"><td><strong>Red-Black</strong></td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td><td>O(n)</td><td>✅ Yes</td></tr>
+                                <tr id="cmp-trie"><td><strong>Trie</strong></td><td>O(m)</td><td>O(m)</td><td>O(m)</td><td>O(n·m)</td><td>✅ By design</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-dim);margin-top:0.8rem;">* Worst-case O(n) for unbalanced BST. m = key length in Trie.</p>
+                </div>
+            </section>
+
+            <!-- Tab Content: Workbook -->
+            <section id="workbook-tab" class="tab-panel">
+                <div class="glass-card workbook-container">
+                    <h2>Huffman Compression Concept Guide</h2>
+                    <hr class="divider">
+
+                    <div class="workbook-sections">
+                        <div class="wb-section">
+                            <h3><i class="fa-solid fa-graduation-cap"></i> Algorithmic Process</h3>
+                            <p>Huffman Coding uses a <strong>greedy approach</strong> to build a prefix binary tree. The
+                                steps are:</p>
+                            <ol>
+                                <li>Count frequencies of all unique bytes in the input stream.</li>
+                                <li>Initialize leaf nodes for each byte and insert them into a
+                                    <strong>Min-Heap</strong>.
+                                </li>
+                                <li>Extract the two nodes with the lowest frequencies.</li>
+                                <li>Merge them under a new parent node, summing their frequencies.</li>
+                                <li>Insert the parent node back into the Min-Heap.</li>
+                                <li>Repeat steps 3–5 until only one node (the root) remains.</li>
+                                <li>Traverse the tree to assign paths: <strong>left = 0, right = 1</strong>.</li>
+                            </ol>
+                        </div>
+
+                        <div class="wb-section">
+                            <h3><i class="fa-solid fa-shield-halved"></i> Prefix-Free Coding</h3>
+                            <p>Because leaf nodes are the only nodes that store character bytes, no character's code can
+                                be a prefix of another code. This ensures a bitstream can be parsed from start to finish
+                                without delimiters, making it uniquely decodable.</p>
+                        </div>
+
+                        <div class="wb-section">
+                            <h3><i class="fa-solid fa-box-archive"></i> Binary Packing Header Format</h3>
+                            <p>A compressed <code>.huff</code> file is structured into three parts:</p>
+                            <div class="format-diagram">
+                                <div class="fd-box fill-primary">Header Size (4 Bytes)</div>
+                                <div class="fd-box fill-secondary">JSON Metadata (Frequency Table & Padding Count)</div>
+                                <div class="fd-box fill-tertiary">Padded Bitstream (Byte-Packed Bits)</div>
+                            </div>
+                            <p class="format-desc">The first 4 bytes are unpacked as a big-endian uint32, telling the
+                                decompressor exactly how many bytes to read to parse the header containing the metadata.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab Content: Algorithms -->
+            <section id="algorithms-tab" class="tab-panel">
+                <div class="algo-header">
+                    <h2>CompressIQ — DSA Algorithms</h2>
+                    <p>Every algorithm powering the CompressIQ compression pipeline — with complexity analysis and live interactive demos.</p>
+                </div>
+
+                <!-- Algo Demo Input -->
+                <div class="glass-card algo-demo-card">
+                    <div class="algo-demo-header">
+                        <h3><i class="fa-solid fa-flask text-gradient"></i> Interactive Algorithm Tester</h3>
+                        <p>Type any text below to run all algorithms on it live.</p>
+                    </div>
+                    <div class="algo-input-row">
+                        <input type="text" id="algo-input" placeholder="e.g. ABRACADABRA" value="ABRACADABRA" />
+                        <button class="btn-primary" id="btn-run-algos"><i class="fa-solid fa-play"></i> Run All</button>
+                    </div>
+                </div>
+
+                <!-- Algorithm Cards Grid -->
+                <div class="algo-grid">
+
+                    <!-- 1. Frequency Count -->
+                    <div class="algo-card" id="algo-freq">
+                        <div class="algo-card-header">
+                            <span class="algo-number">01</span>
+                            <div>
+                                <h4>Frequency Count</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n) Time</span>
+                                    <span class="badge-space">O(k) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Single linear pass over all bytes to build a dictionary mapping each unique byte to its occurrence count. This is Step 1 of the Huffman pipeline.</p>
+                        <div class="algo-output" id="output-freq">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 2. Insertion Sort -->
+                    <div class="algo-card" id="algo-insertion">
+                        <div class="algo-card-header">
+                            <span class="algo-number">02</span>
+                            <div>
+                                <h4>Insertion Sort</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n²) Time</span>
+                                    <span class="badge-space">O(1) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">In-place stable sort. Efficient for very small arrays. Used as a baseline comparison to demonstrate why Merge Sort is preferred for codebook sorting.</p>
+                        <div class="algo-output" id="output-insertion">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 3. Merge Sort -->
+                    <div class="algo-card" id="algo-merge">
+                        <div class="algo-card-header">
+                            <span class="algo-number">03</span>
+                            <div>
+                                <h4>Merge Sort</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n log n) Time</span>
+                                    <span class="badge-space">O(n) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Divide-and-conquer sorting. Splits the frequency list in halves recursively, then merges them in sorted order. Guarantees O(n log n) in all cases.</p>
+                        <div class="algo-output" id="output-merge">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 4. Binary Search -->
+                    <div class="algo-card" id="algo-bsearch">
+                        <div class="algo-card-header">
+                            <span class="algo-number">04</span>
+                            <div>
+                                <h4>Binary Search</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(log n) Time</span>
+                                    <span class="badge-space">O(1) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Searches a sorted codebook for a target byte value by halving the search window each step. Used to locate symbols in pre-sorted codebook arrays.</p>
+                        <div class="algo-output" id="output-bsearch">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 5. Min-Heap -->
+                    <div class="algo-card" id="algo-heap">
+                        <div class="algo-card-header">
+                            <span class="algo-number">05</span>
+                            <div>
+                                <h4>Min-Heap (Priority Queue)</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(log n) Insert/Extract</span>
+                                    <span class="badge-space">O(n) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Custom array-based binary tree. Always keeps the minimum-frequency node at index 0. Parent index: ⌊(i-1)/2⌋. Left child: 2i+1. Right child: 2i+2.</p>
+                        <div class="algo-output" id="output-heap">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 6. Greedy Merge -->
+                    <div class="algo-card" id="algo-greedy">
+                        <div class="algo-card-header">
+                            <span class="algo-number">06</span>
+                            <div>
+                                <h4>Greedy Tree Build</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n log n) Total</span>
+                                    <span class="badge-space">O(n) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Core Huffman algorithm. Repeatedly extracts the two lowest-frequency nodes, merges them under a new parent, and re-inserts until only the root remains.</p>
+                        <div class="algo-output" id="output-greedy">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 7. BFS Traversal -->
+                    <div class="algo-card" id="algo-bfs">
+                        <div class="algo-card-header">
+                            <span class="algo-number">07</span>
+                            <div>
+                                <h4>BFS Tree Traversal</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n) Time</span>
+                                    <span class="badge-space">O(w) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Breadth-First (level-order) traversal using a queue. Visits the root, then all level-1 nodes, then level-2, etc. Reveals how common characters sit near the root.</p>
+                        <div class="algo-output" id="output-bfs">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 8. DFS Traversal -->
+                    <div class="algo-card" id="algo-dfs">
+                        <div class="algo-card-header">
+                            <span class="algo-number">08</span>
+                            <div>
+                                <h4>DFS Tree Traversal</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n) Time</span>
+                                    <span class="badge-space">O(h) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Pre-order depth-first traversal (Root→Left→Right). At each leaf, the accumulated path of 0s and 1s IS the Huffman code for that character.</p>
+                        <div class="algo-output" id="output-dfs">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 9. Shannon Entropy -->
+                    <div class="algo-card" id="algo-entropy">
+                        <div class="algo-card-header">
+                            <span class="algo-number">09</span>
+                            <div>
+                                <h4>Shannon Entropy</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n) Time</span>
+                                    <span class="badge-space">O(k) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">H(X) = −Σ P(x)·log₂(P(x)). Calculates the theoretical minimum bits-per-symbol. Huffman coding always achieves within 1 bit of this limit.</p>
+                        <div class="algo-output" id="output-entropy">Run the demo to see results.</div>
+                    </div>
+
+                    <!-- 10. Bit Packing -->
+                    <div class="algo-card" id="algo-bitpack">
+                        <div class="algo-card-header">
+                            <span class="algo-number">10</span>
+                            <div>
+                                <h4>Bit Packing</h4>
+                                <div class="complexity-badges">
+                                    <span class="badge-time">O(n) Time</span>
+                                    <span class="badge-space">O(n/8) Space</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="algo-desc">Groups 8 consecutive bits into one physical byte using integer bit-shifting. Without this step, writing '0'/'1' as text characters would make files 8× LARGER.</p>
+                        <div class="algo-output" id="output-bitpack">Run the demo to see results.</div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+
+</html>
